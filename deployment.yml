@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-hello-world
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-hello-world
+  template:
+    metadata:
+      labels:
+        app: php-hello-world
+    spec:
+      containers:
+      - name: php-hello-world
+        image: ghcr.io/jlallana/php-hello-world:main
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-hello-world-service
+spec:
+  selector:
+    app: php-hello-world
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: php-hello-world-ingress
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: php-hello-world-service
+            port:
+              number: 80

@@ -1,2 +1,4 @@
 dockerfile
 .git
+.github/workflows
+.deployment.yml
